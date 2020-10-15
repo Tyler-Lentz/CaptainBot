@@ -15,12 +15,13 @@ TOKEN = open("token.txt","r").readline()
 client = commands.Bot(command_prefix = '>>')
 
 # Answers with the ms latency
-@client.command()
+@client.command(brief="Checks connection to bot", description = "Returns latency in milliseconds to the bot")
 async def ping(ctx):
     await ctx.send(f'Pong! {round (client.latency * 1000)}ms ')
 
 # Reset the player list to current players in voice channel
-@client.command()
+@client.command(brief="Initializes the game.", \
+                description="Sets everybody in the users voice channel as part of the game and mutes everybody")
 async def start_game(ctx):
     players.clear()
     await ctx.send("Starting an Among Us game...")
@@ -32,7 +33,7 @@ async def start_game(ctx):
         await ctx.send("Muted " + member.nick)
 
 # Clear the player list and unmute everybody
-@client.command()
+@client.command(brief="Ends the game", description="Ends the game and unmutes everybody that is registered in the game")
 async def end_game(ctx):
     for player in players:
         await player.member.edit(mute=False)
@@ -40,7 +41,7 @@ async def end_game(ctx):
     await ctx.send("Game ended")
 
 # Dislpays the status of all the players currently registered in the game 
-@client.command()
+@client.command(brief="Lists all players", description="Gives a list of all registered players and if they are alive")
 async def get_players(ctx):
     print (players)
     if not players:
@@ -49,7 +50,8 @@ async def get_players(ctx):
         await ctx.send(player)
 
 # Starts a meeting, pass through parameters of people who have died
-@client.command()
+@client.command(brief="Starts a meeting and unmutes all alive players",\
+                description=">>call_meeting arg1 arg2 arg3... where the args are player names that are dead")
 async def call_meeting(ctx, *dead):
     for passedName in dead:
         await setDead(ctx, passedName)
@@ -60,13 +62,14 @@ async def call_meeting(ctx, *dead):
     await unmuteAlive()
 
 # adds a person to the dead list
-@client.command()
+@client.command(brief="Sets a player as dead", description="Takes one argument which is the name of the dead player")
 async def set_dead(ctx, name):
     await setDead(ctx, name)
 
 # Ends a meeting and takes parameter of the person who died (or perhaps DCed)
 # if applicable
-@client.command()
+@client.command(brief="Ends a meeting and mutes all alive players",\
+                description=">>end_meeting arg1 arg2 arg3... where the args are player names that are dead")
 async def end_meeting(ctx, *dead):
     for passedName in dead:
         await setDead(ctx, passedName)
